@@ -28,28 +28,28 @@ Firmware version-aware script that queries most of known endpoints from
 [unofficial documentation](https://xled-docs.readthedocs.io) and writes whole
 endpoint paths in otput:
 
-.. code-block:: console
-
-    $ ./all 192.168.4.1
+```
+$ ./all 192.168.4.1
+```
 
 Wrapper of previous script that also writes output to filename that consists of
 device name and firmware version:
 
-.. code-block:: console
-
-    $ ./gather 192.168.4.1
+```
+$ ./gather 192.168.4.1
+```
 
 Example of high level wrapper:
 
-.. code-block:: console
-
-    $ ./set-demo 192.168.4.1
+```
+$ ./set-demo 192.168.4.1
+```
 
 Another example 
 
-.. code-block:: console
-
-    $ echo -e 'Hello!' | ./set-echo 192.168.4.1
+```
+$ echo -e 'Hello!' | ./set-echo 192.168.4.1
+```
 
 which requires `awk` to escape newlines. Other control characters from U+0000
 through U+001F are not escaped and `jq` complains.
@@ -57,9 +57,9 @@ through U+001F are not escaped and `jq` complains.
 Example of low level get where second argument is an endpoint without
 `/xled/v1/` prefix:
 
-.. code-block:: console
-
-    $ ./get 192.168.4.1 gestalt
+```
+$ ./get 192.168.4.1 gestalt
+```
 
 If standard output (stdout) of a script is associated with a terminal or if it
 is run with environment variable `XLED_DEBUG=1`, scripts shows more verbose
