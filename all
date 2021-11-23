@@ -1,0 +1,166 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ "$#" != 1 ]
+then
+    echo "$0 <IP address>" >&2
+    echo
+    exit 1
+fi
+
+H="$1"
+
+if [[ ! -v XLED_DEBUG ]]
+then
+    if [ -t 1 ]
+    then
+        XLED_DEBUG_INTERNAL=1
+    else
+        XLED_DEBUG_INTERNAL=0
+    fi
+else
+    XLED_DEBUG_INTERNAL="$XLED_DEBUG"
+    unset XLED_DEBUG
+fi
+
+T=$(./auth "$H")
+
+V=$(./get "$H" "$T" "fw/version" | jq -r .version)
+
+#debug "FW version: $V"
+
+case "$V" in
+    "1.99.18" | "1.99.20" | "1.99.24" | "1.99.30" | "2.0.0" | "2.0.8" | "2.0.12" | "2.0.13" | "2.0.19" | "2.2.1" | "2.2.2")
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "fw/version"
+            "network/status"
+            "status"
+        )
+        ;;
+    "2.0.22-mqtt" | "2.1.0" | "2.1.1-net" | "2.1.2-net")
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "fw/version"
+            "network/status"
+            "mqtt/config"
+        )
+        ;;
+    "2.3.5")
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "led/out/brightness"
+            "fw/version"
+            "network/status"
+            "mqtt/config"
+            "status"
+            "mic/config"
+            "mic/sample"
+            "summary"
+        )
+        ;;
+    "2.4.2" | "2.4.6" | "2.4.14" | "2.4.16" | "2.4.21" | "2.4.22" | "2.4.25" | "2.4.30")
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "led/out/brightness"
+            "fw/version"
+            "network/status"
+            "mqtt/config"
+            "status"
+            "mic/config"
+            "mic/sample"
+        )
+        ;;
+    "2.5.6" | "2.5.9")
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "led/out/brightness"
+            "fw/version"
+            "network/status"
+            "mqtt/config"
+            "movies"
+            "playlist"
+            "status"
+            "summary"
+            "music/drivers"
+            "music/drivers/sets"
+            "music/drivers/sets/current"
+        )
+        ;;
+    *)
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "led/out/brightness"
+            "fw/version"
+            "network/status"
+            "mqtt/config"
+            "movies"
+            "playlist"
+            "status"
+            "mic/config"
+            "mic/sample"
+            "summary"
+        )
+        ;;
+esac
+
+for i in "${!ENDPOINTS[@]}"
+do
+    if [ "$i" != 0 ]
+    then
+        echo
+    fi
+    E="${ENDPOINTS[$i]}"
+
+    if [ "$XLED_DEBUG_INTERNAL" -ne 0 ]
+    then
+        echo "GET /xled/v1/$E" >&2
+        XLED_DEBUG=0 ./get "$H" "$T" "$E" | jq
+    else
+        XLED_DEBUG=0 ./get "$H" "$T" "$E"
+    fi
+done

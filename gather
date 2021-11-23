@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+if [ "$#" != 1 ]
+then
+    echo "$0 <IP address>" >&2
+    echo
+    exit 1
+fi
+
+H="$1"
+
+if [[ ! -v XLED_DEBUG ]]
+then
+    if [ -t 1 ]
+    then
+        XLED_DEBUG_INTERNAL=1
+    else
+        XLED_DEBUG_INTERNAL=0
+    fi
+else
+    XLED_DEBUG_INTERNAL="$XLED_DEBUG"
+    unset XLED_DEBUG
+fi
+
+T=$(./auth "$H")
+
+DN="$(./get "$H" "$T" device_name | jq -r '.name' | sed 's/Twinkly_//')"
+V="$(./get "$H" fw/version | jq -r '.version')"
+
+FN="${DN}_$V.txt"
+
+if [ "$XLED_DEBUG_INTERNAL" -ne 0 ]
+then
+    echo "Writing to: $FN" >&2
+fi
+
+export XLED_DEBUG="$XLED_DEBUG_INTERNAL"
+./all "$H" 2>&1 | tee "$FN"
