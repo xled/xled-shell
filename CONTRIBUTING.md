@@ -3,6 +3,12 @@ Contributing
 
 * Start with a fork of the repo on GitHub.
 * Clone your fork locally.
+* Ensure you have installed `shellcheck` binary.
+* Install pre-commit hook (which will run sanity checks on local commits):
+
+```
+    $ pre-commit install
+```
 
 Please follow [Github Flow](https://guides.github.com/introduction/flow/index.html).
 
