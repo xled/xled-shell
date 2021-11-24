@@ -110,7 +110,7 @@ requires following binaries available:
 * `timeout` - usually part of coreutils package
 * `gatttool`
 
-# Configure a device to connect to a WiFi
+## Configure a device to connect to a WiFi
 
 This expects device to be in accesss point mode and firmware 2.4.24 or higher.
 The easiest way is to [reset the device into factory
