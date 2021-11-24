@@ -110,6 +110,61 @@ requires following binaries available:
 * `timeout` - usually part of coreutils package
 * `gatttool`
 
+# Configure a device to connect to a WiFi
+
+This expects device to be in accesss point mode and firmware 2.4.24 or higher.
+The easiest way is to [reset the device into factory
+defaults](https://help.twinkly.com/en/help/how-do-i-reset-my-twinkly-device).
+
+1. Scan networks and give a little bit time to settle. E.g. with the
+   NetworkManager CLI:
+
+   ```
+   $ sudo nmcli device wifi rescan && sleep 3 && nmcli device wifi
+   ```
+
+2. Display available networks and look for an SSID with `Twinkly_` prefix.
+   Again with the NetworkManager CLI:
+
+   If there is none, you might need to rescan WiFi, wait a little bit more or
+   make sure that your device is in AP mode (factory reset).
+
+   ```
+   $ nmcli device wifi
+   ```
+
+3. Connect to Twinkly's AP. [For second generation of Twinkly it means use
+   password](https://help.twinkly.com/en/help/connect-twinkly-pro-to-the-direct-wi-fi):
+
+   ```
+   sudo nmcli device wifi connect Twinkly_33AAFF password Twinkly2019
+   ```
+
+4. Get MAC address of WiFi adapter:
+
+   ```
+   $ ./get 192.168.4.1 gestalt | jq -r .mac
+   ```
+
+5. Use this MAC address to encrypt SSID "`home`" and password "`Twinkly`" using
+   not yet merged code: https://github.com/scrool/xled/issues/70 :
+
+   ```
+   $ ./encrypt-91.py 98:f4:ab:2b:b2:50 home Twinkly
+   Encrypted SSID: iWHuUnNA5rdbyGir7keEfMYDj6J8o74916Bdlo6A1SROglbiXoPYOqY0kMiLrYwUTDHPEWirxOJV15jDBLJqew==
+   Encrypted password: tXnqWRgsn7dbyGir7keEfMYDj6J8o74916Bdlo6A1SROglbiXoPYOqY0kMiLrYwUTDHPEWirxOJV15jDBLJqew==
+   ```
+
+6. Send configuration through API:
+
+    ```
+    $ echo '{"mode":1,"station":{"dhcp":1,"encssid":"iWHuUnNA5rdbyGir7keEfMYDj6J8o74916Bdlo6A1SROglbiXoPYOqY0kMiLrYwUTDHPEWirxOJV15jDBLJqew==","encpassword":"tXnqWRgsn7dbyGir7keEfMYDj6J8o74916Bdlo6A1SROglbiXoPYOqY0kMiLrYwUTDHPEWirxOJV15jDBLJqew=="}}' | ./post-json 192.168.4.1 network/status
+    POST network/status
+    {
+    "code": 1000
+    }
+    ```
+
 ## Why?
 
 This is a quick way to test Twinkly API.
