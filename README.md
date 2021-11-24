@@ -75,7 +75,7 @@ Run with `XLED_DEBUG=0` to get only response from the device.
 All shell scripts are expected to be run from current directory because they
 sometimes they run other scripts and expects them in the same directory.
 
-# Configure a device through Bluetooth to connect to a WiFi
+## Configure a device through Bluetooth to connect to a WiFi
 
 This option is available on for second generation devices.
 
@@ -114,7 +114,7 @@ requires following binaries available:
 
 This is a quick way to test Twinkly API.
 
-### References
+## References
 
 There are other projects that might be more suitable for your needs:
 
