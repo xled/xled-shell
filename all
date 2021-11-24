@@ -101,7 +101,7 @@ case "$V" in
             "mic/sample"
         )
         ;;
-    "2.5.6" | "2.5.9")
+    "2.5.6" | "2.5.9" | "2.6.0")
         ENDPOINTS=(
             "gestalt"
             "device_name"
@@ -122,6 +122,30 @@ case "$V" in
             "music/drivers"
             "music/drivers/sets"
             "music/drivers/sets/current"
+        )
+        ;;
+    "2.7.1" | "2.8.3")
+        ENDPOINTS=(
+            "gestalt"
+            "device_name"
+            "timer"
+            "led/mode"
+            "led/effects"
+            "led/effects/current"
+            "led/config"
+            "led/movie/config"
+            "led/out/brightness"
+            "fw/version"
+            "network/status"
+            "mqtt/config"
+            "movies"
+            "playlist"
+            "status"
+            "summary"
+            "music/drivers"
+            "music/drivers/sets"
+            "music/drivers/sets/current"
+            "led/color"
         )
         ;;
     *)
