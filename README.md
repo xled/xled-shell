@@ -61,6 +61,12 @@ Example of low level get where second argument is an endpoint without
 $ ./get 192.168.4.1 gestalt
 ```
 
+Another example, this time use the `DELETE` request:
+
+```
+./delete 192.168.4.1 movies
+```
+
 If standard output (stdout) of a script is associated with a terminal or if it
 is run with environment variable `XLED_DEBUG=1`, scripts shows more verbose
 output on standard error output (stderr) and runs `jq` to pretty format output.
