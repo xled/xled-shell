@@ -69,6 +69,41 @@ Run with `XLED_DEBUG=0` to get only response from the device.
 All shell scripts are expected to be run from current directory because they
 sometimes they run other scripts and expects them in the same directory.
 
+# Configure a device through Bluetooth to connect to a WiFi
+
+This option is available on for second generation devices.
+
+1. Follow guide on Twinkly site to [Connect Twinkly Generation II to your Local
+   Wi-fi](https://help.twinkly.com/en/help/how-do-i-set-up-my-generation-ii-device):
+
+        Press and hold the button on the controller until the light turns to a
+        solid CYAN color (about 5 seconds). This indicates that Twinkly is
+        ready to be paired via Bluetooth to your phone.
+
+2. Get MAC address of Twinkly's bluetooth adapter:
+
+   ```
+   $ sudo hcitool lescan
+   ```
+
+   and look for a device with `Twinkly_` prefix
+
+3. Run:
+
+   ```
+   $ ./configure-wifi-over-bluetooth-sta 98:f4:ab:1b:b2:10 'home' 'Twinkly'
+   ```
+
+   where `98:f4:ab:1b:b2:10` is replaced with the MAC address obtained from
+   previous step, `home` is SSID of your WiFi, `password` is its password.
+
+This script script accepts also `XLED_DEBUG=2` for more verbose output. Script
+requires following binaries available:
+
+* `python3`
+* `timeout` - usually part of coreutils package
+* `gatttool`
+
 ## Why?
 
 This is a quick way to test Twinkly API.
