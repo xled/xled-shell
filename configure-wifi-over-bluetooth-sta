@@ -1,0 +1,120 @@
+#!/bin/bash
+
+set -u
+set -o pipefail
+
+if [ "$#" -eq 3 ]
+then
+    mac="$1"
+    SSID="$2"
+    PASS="$3"
+else
+    echo "$0 <Bluetooth MAC address> <SSID> <password>" >&2
+    echo
+    exit 1
+fi
+
+if [[ ! -v XLED_DEBUG ]]
+then
+    if [ -t 1 ]
+    then
+        XLED_DEBUG_INTERNAL=1
+    else
+        XLED_DEBUG_INTERNAL=0
+    fi
+else
+    XLED_DEBUG_INTERNAL="$XLED_DEBUG"
+    unset XLED_DEBUG
+fi
+
+function debug1()
+{
+    if [ "$XLED_DEBUG_INTERNAL" -ge 1 ]
+    then
+        echo "$@" >&2
+    fi
+}
+
+i=0
+ii="00"
+
+send() {
+    V="$1"
+    T="$2"
+    D="$3"
+
+    if [ "$D" -eq 2 ]
+    then
+        echo
+        echo "Sending $V"
+        timeout "$T" gatttool -b "$mac" --char-write-req --handle=0x002a --value "${V// /}" --listen
+    elif [ "$D" -le 1 ]
+    then
+        timeout "$T" gatttool -b "$mac" --char-write-req --handle=0x002a --value "${V// /}" --listen > /dev/null
+    fi
+
+    i=$((i+1))
+    ii=$(printf "%02x" $i)
+}
+
+len() {
+    python3 -c 'print(format(len("'"$1"'")+1, "x"))'
+}
+
+hex() {
+    python3 -c 'print(" ".join([format(ord(x), "x") for x in list("'"$1"'")]))'
+}
+
+C="24"
+V="$C 00 $ii 00"
+debug1 "#1 Getting the Wi-Fi list."
+send "$V" 5 "$XLED_DEBUG_INTERNAL"
+
+C="08"
+V="$C 08 $ii 02 02 00"
+debug1 "#2 ?"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="1d"
+V="$C 00 $ii 01 00"
+debug1 "#3 Setting opmode to WiFi"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="14"
+V="$C 00 $ii 00"
+debug1 "#4 Gettting WiFi status"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="08"
+V="$C 08 $ii 02 01 00"
+debug1 "#5 ?"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="09"
+LEN=$(len "$SSID")
+ENC=$(hex "$SSID")
+debug1 "#6 Sending SSID"
+V="$C 00 $ii $LEN $ENC 00"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="0d"
+LEN=$(len "$PASS")
+ENC=$(hex "$PASS")
+debug1 "#7 Sending password"
+V="$C 00 $ii $LEN $ENC 00"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="0c"
+V="$C 00 $ii 00"
+debug1 "#8 Switching to STA mode"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="14"
+V="$C 00 $ii 00"
+debug1 "#9 Switching WiFi status"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
+
+C="20"
+V="$C 00 $ii 00"
+debug1 "#10 Disconnecting from BLE GATT link"
+send "$V" 1 "$XLED_DEBUG_INTERNAL"
