@@ -27,7 +27,7 @@ fi
 
 T=$(./auth "$H")
 
-DN="$(./get "$H" "$T" device_name | jq -r '.name' | sed 's/Twinkly_//')"
+DN="$(./get "$H" "$T" gestalt | jq -r '.mac' | sed 's/.*\([0-9a-f]\{2\}\):\([0-9a-f]\{2\}\):\([0-9a-f]\{2\}\)$/\1\2\3/' | tr '[:lower:]' '[:upper:]')"
 V="$(./get "$H" fw/version | jq -r '.version')"
 
 FN="${DN}_$V.txt"
