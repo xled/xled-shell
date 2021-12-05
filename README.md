@@ -32,8 +32,8 @@ endpoint paths in otput:
 $ ./all 192.168.4.1
 ```
 
-Wrapper of previous script that also writes output to filename that consists of
-device name and firmware version:
+Wrapper of the previous script that also writes output to a filename in
+`gathered/` directory that consists of device ID and firmware version:
 
 ```
 $ ./gather 192.168.4.1
